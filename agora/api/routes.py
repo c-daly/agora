@@ -16,6 +16,7 @@ import yaml
 from fastapi import FastAPI, HTTPException, Query
 
 from agora.adapters import fred_adapter, treasury_adapter, sec_ftd_adapter
+from agora.api.short_intel import router as short_intel_router
 from agora.adapters.treasury_adapter import _MATURITY_TO_CSV_COL
 from agora.analysis import yield_curve
 
@@ -74,6 +75,8 @@ def _get_fred_api_key() -> str:
 def create_app() -> FastAPI:
     """Create and return a configured FastAPI application."""
     app = FastAPI(title="Agora API", version="0.1.0")
+
+    app.include_router(short_intel_router)
 
     # ------------------------------------------------------------------
     # GET /api/yields
