@@ -1,0 +1,19 @@
+depends_on:
+- short_composite
+- short_divergence
+- yahoo_quotes_adapter
+eval: eval/
+id: short_intel_api
+issue: 15
+objective: "Add API routes for the short selling intelligence features.\n\nRoutes:\n\
+  - GET /api/symbol/{ticker}/short-composite \u2014 composite score + components\n\
+  - GET /api/symbol/{ticker}/short-volume?start_date=...&end_date=...\n- GET /api/symbol/{ticker}/short-interest\n\
+  - GET /api/symbol/{ticker}/ftd?start_date=...&end_date=...\n- GET /api/symbol/{ticker}/insider-trades?start_date=...&end_date=...\n\
+  - GET /api/symbol/{ticker}/divergences\n- GET /api/symbol/{ticker}/quote?start_date=...&end_date=...\n\
+  - GET /api/symbol/{ticker}/summary \u2014 everything in one call\n\nMount as a sub-router\
+  \ on the existing FastAPI app.\nHandle errors with proper status codes.\n"
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/api/short_intel.py

@@ -1,0 +1,23 @@
+eval: eval/
+id: yahoo_short_adapter
+issue: 11
+objective: 'Build a Yahoo Finance short interest adapter using yfinance.
+
+
+  Must:
+
+  1. Fetch short interest, short ratio, short percent of float, short percent of shares
+  outstanding
+
+  2. Return as agora.schemas.ShortData objects with data_type="short_interest"
+
+  3. Handle tickers that don''t have short data
+
+  4. Include days_to_cover when available
+
+  '
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/adapters/yahoo_short_adapter.py

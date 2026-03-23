@@ -1,0 +1,21 @@
+depends_on:
+- short_intel_api
+eval: eval/
+id: symbol_deep_dive
+issue: 16
+objective: "Build a per-symbol deep-dive page in the React app.\n\nMust:\n1. Ticker\
+  \ input at the top \u2014 type a symbol, hit enter, see everything\n2. Composite\
+  \ short score displayed prominently (0-100 gauge or badge)\n3. Price chart with\
+  \ volume bars (from yahoo_quotes_adapter)\n4. Short volume ratio time series overlaid\
+  \ or below price\n5. FTD heatmap for this specific ticker (reuse existing component)\n\
+  6. Insider transaction table (date, name, type, shares, price)\n7. Divergence alerts\
+  \ section (colored badges for each signal)\n8. Glossary tooltips on all metric labels\n\
+  9. Default to QS as demo ticker\n10. Add navigation \u2014 link from main dashboard\
+  \ to deep dive and back\n\nThis is the flagship page. When someone types QS and\
+  \ sees the FTD spikes\nnext to rising short volume next to insider activity, the\
+  \ story tells itself.\n"
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: webapp/src/pages/SymbolDeepDive.tsx

@@ -1,0 +1,31 @@
+eval: eval/
+id: finra_short_volume_adapter
+issue: 10
+objective: 'Build a FINRA short sale volume adapter.
+
+
+  Must:
+
+  1. Fetch daily short sale volume data per symbol
+
+  2. Return as agora.schemas.ShortData objects with data_type="short_volume"
+
+  3. Combine data from all TRF reporting facilities for complete off-exchange picture
+
+  4. Support date range and symbol filtering
+
+  5. Compute short volume ratio (short volume / total volume) per day
+
+  6. Handle missing days (weekends, holidays) gracefully
+
+
+  FINRA publishes daily short sale volume files.
+
+  Prefer the FINRA API if available, fall back to flat file download.
+
+  '
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/adapters/finra_short_volume_adapter.py

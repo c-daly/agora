@@ -1,0 +1,19 @@
+depends_on:
+- short_composite
+- edgar_insider_adapter
+eval: eval/
+id: short_divergence
+issue: 14
+objective: "Build the short divergence detection module.\n\nMust:\n1. Detect conflicting\
+  \ signals between short positioning and other data:\n   - Shorts rising while insiders\
+  \ are buying\n   - Shorts rising while FTDs are declining (covering?)\n   - Short\
+  \ interest dropping while short volume stays high (hidden shorts?)\n2. Accept short\
+  \ composite data and insider transaction data\n3. Return a list of divergence signals\
+  \ with:\n   - divergence_type, description, severity (low/medium/high), date_range\n\
+  4. Handle missing data gracefully\n5. Be deterministic\n\nPure analysis \u2014 no\
+  \ data fetching.\n"
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/short_divergence.py
