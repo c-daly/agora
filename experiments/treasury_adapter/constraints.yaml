@@ -1,0 +1,13 @@
+interface_contracts:
+  module: agora.adapters.treasury_adapter
+  functions:
+    - name: fetch_yields
+      signature: "(*, maturities: list[str] | None = None, start_date: date | None = None, end_date: date | None = None) -> list[TimeSeries]"
+
+do_not_do:
+  - "Do not require any API key"
+  - "Do not fail on missing maturities for specific dates — skip those data points"
+
+escalate_if: []
+
+known_findings: []

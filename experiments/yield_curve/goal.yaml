@@ -1,0 +1,37 @@
+objective: |
+  Build a yield curve analysis module for Agora.
+
+  The module must:
+  1. Accept a list of TimeSeries objects (Treasury yields by maturity)
+  2. Compute the current yield curve (latest values across maturities)
+  3. Compute spread between any two maturities (e.g., 10yr - 2yr)
+  4. Detect yield curve inversions (any maturity pair where shorter > longer)
+  5. Return structured results as dataclasses or Pydantic models
+  6. Handle edge cases: missing maturities, insufficient data points,
+     single-date input
+
+  This is an analysis module, not an adapter. It operates on already-fetched
+  TimeSeries data — it does not fetch data itself.
+
+target: agora/analysis/yield_curve.py
+
+context: |
+  Agora is a financial intelligence platform aggregating free data sources.
+  The yield curve module consumes output from the treasury_adapter.
+  It is the first analysis module — it should establish patterns for the
+  analysis/ directory.
+
+  Input: list of TimeSeries objects where metadata.unit identifies the maturity
+  (e.g., "10-Year", "2-Year"). Each TimeSeries has date, value (yield %), metadata.
+
+  The common data schemas are defined in agora/schemas/models.py.
+
+success_criteria:
+  - metric: test_pass_rate
+    threshold: 1.0
+    primary: true
+    description: All pytest tests in eval/ must pass
+
+eval: eval/
+
+environment: {}

@@ -1,0 +1,36 @@
+objective: |
+  Build a Treasury.gov adapter for Agora.
+
+  The adapter must:
+  1. Fetch daily Treasury yield curve rates from the Treasury.gov API
+  2. Return data as agora.schemas.TimeSeries objects with metadata.source="TREASURY"
+  3. Support fetching specific maturities (1mo, 3mo, 6mo, 1yr, 2yr, 3yr, 5yr, 7yr, 10yr, 20yr, 30yr)
+  4. Support filtering by date range
+  5. Handle missing data points gracefully (some maturities have gaps on certain dates)
+  6. Handle API errors with descriptive exceptions
+
+  Treasury yield curve data is available at:
+  https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/avg_interest_rates
+
+  Note: The actual daily yield curve rates endpoint is:
+  https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv
+
+target: agora/adapters/treasury_adapter.py
+
+context: |
+  Agora is a financial intelligence platform aggregating free data sources.
+  Treasury yield curve data is foundational — it feeds the yield_curve analysis module
+  for inversion detection and spread analysis.
+
+  The common data schemas are defined in agora/schemas/models.py.
+  No API key is required. Treasury.gov APIs are free and open.
+
+success_criteria:
+  - metric: test_pass_rate
+    threshold: 1.0
+    primary: true
+    description: All pytest tests in eval/ must pass
+
+eval: eval/
+
+environment: {}
