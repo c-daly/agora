@@ -150,16 +150,17 @@ def _download_and_parse(year: int, month: int, half: str) -> list[dict[str, str]
     url = _build_url(year, month, half)
     logger.debug("Downloading FTD file: %s", url)
 
-    session = requests.Session()
-    session.headers.update({"User-Agent": SEC_USER_AGENT})
+    with requests.Session() as session:
+        session.headers.update({"User-Agent": SEC_USER_AGENT})
+        resp = session.get(url, timeout=REQUEST_TIMEOUT)
 
-    resp = session.get(url, timeout=REQUEST_TIMEOUT)
     if resp.status_code == 404:
         logger.debug("FTD file not found (404): %s", url)
         return []
     if resp.status_code != 200:
         raise RuntimeError(
-            f"SEC FTD download failed (HTTP {resp.status_code}) for {url}"
+            f"SEC FTD download failed (HTTP {resp.status_code}) "
+            f"for {year:04d}-{month:02d}{half}"
         )
 
     return _parse_zip_content(resp.content)
@@ -218,13 +219,10 @@ def _row_to_short_data(row: dict[str, str]) -> ShortData | None:
     try:
         # Parse settlement date (YYYYMMDD format)
         raw_date = row.get("SETTLEMENT DATE", "").strip()
-        if not raw_date or len(raw_date) < 8:
+        if not raw_date:
             return None
-        settlement_date = date(
-            int(raw_date[:4]),
-            int(raw_date[4:6]),
-            int(raw_date[6:8]),
-        )
+        from datetime import datetime as _dt
+        settlement_date = _dt.strptime(raw_date, "%Y%m%d").date()
 
         # Parse symbol
         symbol = row.get("SYMBOL", "").strip()

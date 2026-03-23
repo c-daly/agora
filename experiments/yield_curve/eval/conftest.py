@@ -16,14 +16,14 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
 def sample_yields():
     """Normal upward-sloping yield curve data."""
     maturities = {
-        "1-Month": 4.5,
-        "3-Month": 4.7,
-        "6-Month": 4.8,
-        "1-Year": 4.6,
-        "2-Year": 4.3,
-        "5-Year": 4.1,
-        "10-Year": 4.2,
-        "30-Year": 4.5,
+        "1-Month": 3.8,
+        "3-Month": 3.9,
+        "6-Month": 4.0,
+        "1-Year": 4.1,
+        "2-Year": 4.2,
+        "5-Year": 4.4,
+        "10-Year": 4.6,
+        "30-Year": 4.8,
     }
     return [
         TimeSeries(

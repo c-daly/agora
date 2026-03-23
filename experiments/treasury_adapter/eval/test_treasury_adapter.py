@@ -7,7 +7,6 @@ Uses a known date range (2023-01-01 to 2023-03-31) that has data.
 import math
 from datetime import date
 
-import pytest
 
 from agora.adapters.treasury_adapter import fetch_yields
 from agora.schemas import TimeSeries, TimeSeriesMetadata

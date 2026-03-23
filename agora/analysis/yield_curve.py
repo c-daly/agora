@@ -27,7 +27,6 @@ MATURITY_ORDER: list[str] = [
     "30-Year",
 ]
 
-_MATURITY_RANK: dict[str, int] = {m: i for i, m in enumerate(MATURITY_ORDER)}
 
 
 def current_curve(series: list[TimeSeries]) -> dict[str, float]:
@@ -130,7 +129,7 @@ def detect_inversions(series: list[TimeSeries]) -> list[dict]:
                     {
                         "short_maturity": short_mat,
                         "long_maturity": long_mat,
-                        "spread": round(short_yield - long_yield, 10),
+                        "spread": round(short_yield - long_yield, 6),
                     }
                 )
 

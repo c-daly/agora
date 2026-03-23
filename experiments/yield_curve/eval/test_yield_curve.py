@@ -30,7 +30,7 @@ class TestCurrentCurve:
         result = current_curve(sample_yields)
         assert isinstance(result, dict)
         assert "10-Year" in result
-        assert result["10-Year"] == pytest.approx(4.2)
+        assert result["10-Year"] == pytest.approx(4.6)
 
     # 2. current_curve uses latest date when multiple dates present
     def test_uses_latest_date(self, multi_date_yields):
@@ -114,15 +114,11 @@ class TestDetectInversions:
         assert len(result) > 0
 
     def test_returns_empty_for_normal_curve(self, sample_yields):
-        # sample_yields is a normal upward-sloping curve from 2-Year onward
-        # Note: the short end (1-Month through 1-Year) may cause inversions
-        # depending on the implementation's maturity ordering, but 2yr->30yr
-        # is strictly not inverted. We test the core property.
         result = detect_inversions(sample_yields)
-        # In a normal curve there may be minor non-monotonicity but the
-        # standard long-term maturities should not be inverted.
-        # At minimum, verify it returns a list.
         assert isinstance(result, list)
+        assert len(result) == 0, (
+            f"Normal upward-sloping curve should have no inversions, got {result}"
+        )
 
     def test_inversion_dict_has_required_fields(self, inverted_yields):
         result = detect_inversions(inverted_yields)
