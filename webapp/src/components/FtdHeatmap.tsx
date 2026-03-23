@@ -16,8 +16,8 @@ function intensityColor(value: number, max: number): string {
 export function FtdHeatmap({ data: externalData, symbol: initialSymbol }: Props) {
   const [rawData, setRawData] = useState<FtdPoint[]>(externalData ?? []);
   const [loading, setLoading] = useState(!externalData);
-  const [ticker, setTicker] = useState(initialSymbol ?? "SPY");
-  const [inputValue, setInputValue] = useState(initialSymbol ?? "SPY");
+  const [ticker, setTicker] = useState(initialSymbol ?? "QS");
+  const [inputValue, setInputValue] = useState(initialSymbol ?? "QS");
 
   const fetchData = (sym: string) => {
     setLoading(true);
