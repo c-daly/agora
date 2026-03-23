@@ -82,14 +82,43 @@ export function SymbolDeepDive() {
       })
       .then((json) => {
         const data = json.data ?? json;
+        // Map composite (nested object)
+        const comp = data.composite ?? {};
+        // Map quotes: API returns {date, open, high, low, close, volume}
+        const quotes = (data.quote ?? []).map((q: Record<string, unknown>) => ({
+          date: q.date,
+          close: q.close,
+          volume: q.volume,
+        }));
+        // Map short volume: API returns {value, total_for_ratio} -> compute ratio
+        const svol = (data.short_volume ?? []).map((sv: Record<string, unknown>) => ({
+          date: sv.date,
+          short_volume_ratio: (sv.total_for_ratio as number) > 0
+            ? (sv.value as number) / (sv.total_for_ratio as number)
+            : 0,
+        }));
+        // Map insider trades: API returns {entity, action, amount, context}
+        const insiders = (data.insider_trades ?? []).map((t: Record<string, unknown>) => ({
+          date: t.date,
+          name: t.entity,
+          action: t.action,
+          shares: t.amount,
+          price: (t.context as Record<string, unknown>)?.price ?? 0,
+        }));
+        // Map divergences: API returns {divergence_type, description, severity}
+        const divs = (data.divergences ?? []).map((d: Record<string, unknown>) => ({
+          signal: d.divergence_type,
+          severity: d.severity,
+          description: d.description,
+        }));
         setSummary({
-          ticker: data.ticker ?? sym,
-          composite_score: data.composite_score ?? 0,
-          signal_label: data.signal_label ?? "N/A",
-          quote: data.quote ?? [],
-          short_volume: data.short_volume ?? [],
-          insider_trades: data.insider_trades ?? [],
-          divergences: data.divergences ?? [],
+          ticker: data.symbol ?? sym,
+          composite_score: comp.composite_score ?? 0,
+          signal_label: comp.signal ?? "N/A",
+          quote: quotes,
+          short_volume: svol,
+          insider_trades: insiders,
+          divergences: divs,
         });
       })
       .catch((err) => {
