@@ -8,3 +8,9 @@ export interface SpreadPoint {
   spread: number;
   inverted: boolean;
 }
+
+export interface FtdPoint {
+  date: string;
+  symbol: string;
+  quantity: number;
+}

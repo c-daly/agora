@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { YieldCurveChart } from "./components/YieldCurveChart";
 import { SpreadChart } from "./components/SpreadChart";
+import { FtdHeatmap } from "./components/FtdHeatmap";
 import type { YieldCurvePoint, SpreadPoint } from "./types";
 
 function App() {
@@ -44,6 +45,10 @@ function App() {
       <section style={{ marginTop: 32 }}>
         <h2>10yr–2yr Spread</h2>
         <SpreadChart data={spreadData} loading={spreadLoading} />
+      </section>
+      <section style={{ marginTop: 32 }}>
+        <h2>Fails-to-Deliver Heatmap</h2>
+        <FtdHeatmap />
       </section>
     </div>
   );
