@@ -1,0 +1,155 @@
+description: "Short Selling Intelligence \u2014 full per-symbol short analysis from\
+  \ free data"
+tasks:
+- id: yahoo_quotes_adapter
+  target: agora/adapters/yahoo_quotes_adapter.py
+  objective: 'Build a Yahoo Finance quotes adapter using yfinance.
+
+
+    Must:
+
+    1. Fetch historical OHLCV data for any ticker symbol
+
+    2. Return as agora.schemas.Quote objects
+
+    3. Support date range filtering
+
+    4. Handle invalid tickers gracefully
+
+    5. Respect rate limits (yfinance is unofficial)
+
+    '
+  issue: 9
+- id: finra_short_volume_adapter
+  target: agora/adapters/finra_short_volume_adapter.py
+  objective: 'Build a FINRA short sale volume adapter.
+
+
+    Must:
+
+    1. Fetch daily short sale volume data per symbol
+
+    2. Return as agora.schemas.ShortData objects with data_type="short_volume"
+
+    3. Combine data from all TRF reporting facilities for complete off-exchange picture
+
+    4. Support date range and symbol filtering
+
+    5. Compute short volume ratio (short volume / total volume) per day
+
+    6. Handle missing days (weekends, holidays) gracefully
+
+
+    FINRA publishes daily short sale volume files.
+
+    Prefer the FINRA API if available, fall back to flat file download.
+
+    '
+  issue: 10
+- id: yahoo_short_adapter
+  target: agora/adapters/yahoo_short_adapter.py
+  objective: 'Build a Yahoo Finance short interest adapter using yfinance.
+
+
+    Must:
+
+    1. Fetch short interest, short ratio, short percent of float, short percent of
+    shares outstanding
+
+    2. Return as agora.schemas.ShortData objects with data_type="short_interest"
+
+    3. Handle tickers that don''t have short data
+
+    4. Include days_to_cover when available
+
+    '
+  issue: 11
+- id: edgar_insider_adapter
+  target: agora/adapters/edgar_insider_adapter.py
+  objective: 'Build an SEC EDGAR Form 4 insider transaction adapter.
+
+
+    Must:
+
+    1. Fetch recent insider transactions (buys, sells, exercises) for a given ticker
+
+    2. Return as agora.schemas.Transaction objects
+
+    3. Include insider name, title, transaction type, shares, price
+
+    4. Support date range filtering
+
+    5. Respect SEC rate limits (10 req/sec, User-Agent required)
+
+    6. Handle companies with no recent insider activity
+
+
+    EDGAR full-text search API or RSS feeds for Form 4 filings.
+
+    '
+  issue: 12
+- id: short_composite
+  target: agora/analysis/short_composite.py
+  depends_on:
+  - finra_short_volume_adapter
+  - yahoo_short_adapter
+  objective: "Build the short selling composite analysis module.\n\nMust:\n1. Accept\
+    \ short volume data (ShortData, data_type=\"short_volume\"),\n   short interest\
+    \ data (ShortData, data_type=\"short_interest\"),\n   and FTD data (ShortData,\
+    \ data_type=\"ftd\") for a given symbol\n2. Compute a composite short score (0-100)\
+    \ combining:\n   - Short volume ratio trend (rising = bearish)\n   - Short interest\
+    \ level and change\n   - FTD persistence and magnitude\n3. Return a structured\
+    \ result with the composite score,\n   individual component scores, and a signal\
+    \ summary\n4. Handle missing data sources gracefully (degrade, don't crash)\n\
+    5. Be deterministic given same inputs\n\nThis is pure analysis \u2014 does NOT\
+    \ fetch data. Operates on already-fetched data.\n"
+  issue: 13
+- id: short_divergence
+  target: agora/analysis/short_divergence.py
+  depends_on:
+  - short_composite
+  - edgar_insider_adapter
+  objective: "Build the short divergence detection module.\n\nMust:\n1. Detect conflicting\
+    \ signals between short positioning and other data:\n   - Shorts rising while\
+    \ insiders are buying\n   - Shorts rising while FTDs are declining (covering?)\n\
+    \   - Short interest dropping while short volume stays high (hidden shorts?)\n\
+    2. Accept short composite data and insider transaction data\n3. Return a list\
+    \ of divergence signals with:\n   - divergence_type, description, severity (low/medium/high),\
+    \ date_range\n4. Handle missing data gracefully\n5. Be deterministic\n\nPure analysis\
+    \ \u2014 no data fetching.\n"
+  issue: 14
+- id: short_intel_api
+  target: agora/api/short_intel.py
+  depends_on:
+  - short_composite
+  - short_divergence
+  - yahoo_quotes_adapter
+  objective: "Add API routes for the short selling intelligence features.\n\nRoutes:\n\
+    - GET /api/symbol/{ticker}/short-composite \u2014 composite score + components\n\
+    - GET /api/symbol/{ticker}/short-volume?start_date=...&end_date=...\n- GET /api/symbol/{ticker}/short-interest\n\
+    - GET /api/symbol/{ticker}/ftd?start_date=...&end_date=...\n- GET /api/symbol/{ticker}/insider-trades?start_date=...&end_date=...\n\
+    - GET /api/symbol/{ticker}/divergences\n- GET /api/symbol/{ticker}/quote?start_date=...&end_date=...\n\
+    - GET /api/symbol/{ticker}/summary \u2014 everything in one call\n\nMount as a\
+    \ sub-router on the existing FastAPI app.\nHandle errors with proper status codes.\n"
+  issue: 15
+- id: symbol_deep_dive
+  target: webapp/src/pages/SymbolDeepDive.tsx
+  depends_on:
+  - short_intel_api
+  objective: "Build a per-symbol deep-dive page in the React app.\n\nMust:\n1. Ticker\
+    \ input at the top \u2014 type a symbol, hit enter, see everything\n2. Composite\
+    \ short score displayed prominently (0-100 gauge or badge)\n3. Price chart with\
+    \ volume bars (from yahoo_quotes_adapter)\n4. Short volume ratio time series overlaid\
+    \ or below price\n5. FTD heatmap for this specific ticker (reuse existing component)\n\
+    6. Insider transaction table (date, name, type, shares, price)\n7. Divergence\
+    \ alerts section (colored badges for each signal)\n8. Glossary tooltips on all\
+    \ metric labels\n9. Default to QS as demo ticker\n10. Add navigation \u2014 link\
+    \ from main dashboard to deep dive and back\n\nThis is the flagship page. When\
+    \ someone types QS and sees the FTD spikes\nnext to rising short volume next to\
+    \ insider activity, the story tells itself.\n"
+  issue: 16
+success_criteria:
+- metric: test_pass_rate
+  threshold: 1.0
+  primary: true
+on_failure: continue
