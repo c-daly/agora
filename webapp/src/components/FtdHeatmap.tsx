@@ -9,36 +9,54 @@ interface Props {
 function intensityColor(value: number, max: number): string {
   if (max === 0) return "rgba(30, 100, 200, 0.05)";
   const ratio = Math.min(value / max, 1);
-  const alpha = 0.08 + ratio * 0.87; // range 0.08 - 0.95
+  const alpha = 0.08 + ratio * 0.87;
   return `rgba(30, 100, 200, ${alpha.toFixed(2)})`;
 }
 
 export function FtdHeatmap({ data: externalData, symbol: initialSymbol }: Props) {
   const [rawData, setRawData] = useState<FtdPoint[]>(externalData ?? []);
   const [loading, setLoading] = useState(!externalData);
-  const [filter, setFilter] = useState(initialSymbol ?? "");
+  const [ticker, setTicker] = useState(initialSymbol ?? "SPY");
+  const [inputValue, setInputValue] = useState(initialSymbol ?? "SPY");
+
+  const fetchData = (sym: string) => {
+    setLoading(true);
+    // Default to last 3 months — FTD data has ~2 week lag
+    const end = new Date();
+    const start = new Date();
+    start.setMonth(start.getMonth() - 3);
+    const startStr = start.toISOString().split("T")[0];
+    const endStr = end.toISOString().split("T")[0];
+    fetch(`/api/ftd?symbol=${encodeURIComponent(sym)}&start_date=${startStr}&end_date=${endStr}`)
+      .then((res) => res.json())
+      .then((json) => {
+        const points: FtdPoint[] = (json.data ?? []).map((d: { symbol: string; date: string; value: number }) => ({
+          symbol: d.symbol,
+          date: d.date,
+          quantity: d.value,
+        }));
+        setRawData(points);
+      })
+      .catch(() => setRawData([]))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     if (externalData) {
       setRawData(externalData);
       return;
     }
-
-    setLoading(true);
-    fetch("/api/ftd")
-      .then((res) => res.json())
-      .then((json) => {
-        setRawData(json.data ?? []);
-      })
-      .catch(() => setRawData([]))
-      .finally(() => setLoading(false));
+    fetchData(ticker);
   }, [externalData]);
 
-  const filtered = useMemo(() => {
-    if (!filter) return rawData;
-    const upper = filter.toUpperCase();
-    return rawData.filter((d) => d.symbol.toUpperCase().includes(upper));
-  }, [rawData, filter]);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const sym = inputValue.trim().toUpperCase();
+    if (sym && sym !== ticker) {
+      setTicker(sym);
+      fetchData(sym);
+    }
+  };
 
   const { symbols, dates, lookup, maxQty } = useMemo(() => {
     const symbolSet = new Set<string>();
@@ -46,7 +64,7 @@ export function FtdHeatmap({ data: externalData, symbol: initialSymbol }: Props)
     const map = new Map<string, number>();
     let mx = 0;
 
-    for (const d of filtered) {
+    for (const d of rawData) {
       symbolSet.add(d.symbol);
       dateSet.add(d.date);
       const key = `${d.symbol}|${d.date}`;
@@ -55,85 +73,95 @@ export function FtdHeatmap({ data: externalData, symbol: initialSymbol }: Props)
       if (val > mx) mx = val;
     }
 
-    const sortedSymbols = Array.from(symbolSet).sort();
-    const sortedDates = Array.from(dateSet).sort();
-    return { symbols: sortedSymbols, dates: sortedDates, lookup: map, maxQty: mx };
-  }, [filtered]);
-
-  if (loading) return <p>Loading FTD data...</p>;
-
-  if (rawData.length === 0) return <p>No FTD data available.</p>;
-
-  if (filtered.length === 0)
-    return (
-      <div>
-        <div style={{ marginBottom: 12 }}>
-          <label htmlFor="ftd-symbol-filter">Symbol filter: </label>
-          <input
-            id="ftd-symbol-filter"
-            type="text"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            placeholder="e.g. AAPL"
-          />
-        </div>
-        <p>No FTD data matches the filter &quot;{filter}&quot;.</p>
-      </div>
-    );
+    return {
+      symbols: Array.from(symbolSet).sort(),
+      dates: Array.from(dateSet).sort(),
+      lookup: map,
+      maxQty: mx,
+    };
+  }, [rawData]);
 
   return (
     <div>
-      <div style={{ marginBottom: 12 }}>
-        <label htmlFor="ftd-symbol-filter">Symbol filter: </label>
+      <form onSubmit={handleSubmit} style={{ marginBottom: 16, display: "flex", gap: 8, alignItems: "center" }}>
+        <label htmlFor="ftd-symbol">Ticker:</label>
         <input
-          id="ftd-symbol-filter"
+          id="ftd-symbol"
           type="text"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          placeholder="e.g. AAPL"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value.toUpperCase())}
+          style={{
+            padding: "6px 12px",
+            border: "1px solid #ccc",
+            borderRadius: 4,
+            fontSize: 14,
+            width: 100,
+            textTransform: "uppercase",
+          }}
         />
-      </div>
-
-      <div style={{ overflowX: "auto" }}>
-        <table
-          data-testid="ftd-heatmap-table"
-          style={{ borderCollapse: "collapse", fontSize: 13 }}
+        <button
+          type="submit"
+          style={{
+            padding: "6px 16px",
+            background: "#2563eb",
+            color: "#fff",
+            border: "none",
+            borderRadius: 4,
+            fontSize: 14,
+            cursor: "pointer",
+          }}
         >
-          <thead>
-            <tr>
-              <th style={{ padding: "4px 8px", textAlign: "left" }}>Symbol</th>
-              {dates.map((d) => (
-                <th key={d} style={{ padding: "4px 8px", whiteSpace: "nowrap" }}>
-                  {d}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {symbols.map((sym) => (
-              <tr key={sym}>
-                <td style={{ padding: "4px 8px", fontWeight: 600 }}>{sym}</td>
-                {dates.map((d) => {
-                  const qty = lookup.get(`${sym}|${d}`) ?? 0;
-                  return (
-                    <td
-                      key={d}
-                      title={`${sym} ${d}: ${qty.toLocaleString()}`}
-                      style={{
-                        padding: "4px 8px",
-                        backgroundColor: qty > 0 ? intensityColor(qty, maxQty) : "transparent",
-                        textAlign: "right",
-                      }}
-                    >
-                      {qty > 0 ? qty.toLocaleString() : ""}
-                    </td>
-                  );
-                })}
+          Load
+        </button>
+        {ticker && <span style={{ color: "#666", fontSize: 13 }}>Showing: {ticker}</span>}
+      </form>
+
+      {loading && <p>Loading FTD data for {ticker}...</p>}
+
+      {!loading && rawData.length === 0 && (
+        <p>No FTD data available for {ticker}.</p>
+      )}
+
+      {!loading && rawData.length > 0 && (
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ borderCollapse: "collapse", fontSize: 13, width: "100%" }}>
+            <thead>
+              <tr>
+                <th style={{ padding: "6px 8px", textAlign: "left", borderBottom: "2px solid #e5e7eb" }}>Symbol</th>
+                {dates.map((d) => (
+                  <th key={d} style={{ padding: "6px 8px", whiteSpace: "nowrap", borderBottom: "2px solid #e5e7eb" }}>
+                    {d}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {symbols.map((sym) => (
+                <tr key={sym}>
+                  <td style={{ padding: "6px 8px", fontWeight: 600, borderBottom: "1px solid #f0f0f0" }}>{sym}</td>
+                  {dates.map((d) => {
+                    const qty = lookup.get(`${sym}|${d}`) ?? 0;
+                    return (
+                      <td
+                        key={d}
+                        title={`${sym} ${d}: ${qty.toLocaleString()}`}
+                        style={{
+                          padding: "6px 8px",
+                          backgroundColor: qty > 0 ? intensityColor(qty, maxQty) : "transparent",
+                          textAlign: "right",
+                          borderBottom: "1px solid #f0f0f0",
+                        }}
+                      >
+                        {qty > 0 ? qty.toLocaleString() : ""}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
