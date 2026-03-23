@@ -1,0 +1,77 @@
+name: Agora Task
+description: Task for Agora — maps directly to experiment goal.yaml
+title: "[AGORA] "
+labels: ["component:agora"]
+body:
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - priority:critical
+        - priority:high
+        - priority:medium
+        - priority:low
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What exists today, why this matters
+      placeholder: Describe the current state and motivation
+    validations:
+      required: true
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What "done" looks like — the deliverable, not the method
+      placeholder: Describe the desired end state
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: Target
+      description: File path the work targets (triggers integration mode with git worktree). Leave blank for standalone experiments.
+      placeholder: "agora/adapters/fred_adapter.py"
+    validations:
+      required: false
+  - type: textarea
+    id: success_criteria
+    attributes:
+      label: Success Criteria
+      description: "Structured eval criteria in YAML format. Default: all tests pass."
+      placeholder: |
+        - metric: test_pass_rate
+          threshold: 1.0
+          primary: true
+          description: All pytest tests in eval/ must pass
+    validations:
+      required: true
+  - type: input
+    id: eval
+    attributes:
+      label: Eval Path
+      description: Path to eval scripts relative to experiment directory
+      placeholder: "eval/"
+    validations:
+      required: false
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: "Environment variables needed (YAML format). Leave blank if none."
+      placeholder: |
+        FRED_API_KEY: ${FRED_API_KEY}
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Constraints, related issues, links to design docs
+      placeholder: Optional additional context
+    validations:
+      required: false
