@@ -1,0 +1,205 @@
+interface_contracts:
+  module: agora.api.routes
+  framework: FastAPI
+  app_factory: create_app  # must expose create_app() -> FastAPI
+
+  endpoints:
+    - path: /api/yields
+      method: GET
+      query_params:
+        - name: maturities
+          type: str
+          required: false
+          description: "Comma-separated maturity labels (e.g. '10yr,2yr')"
+        - name: start_date
+          type: str  # ISO date
+          required: false
+        - name: end_date
+          type: str  # ISO date
+          required: false
+      response_shape:
+        200:
+          type: object
+          fields:
+            data:
+              type: array
+              items:
+                type: object
+                required_fields: [date, value, maturity, source]
+            count:
+              type: integer
+        400:
+          type: object
+          fields:
+            detail: {type: string}
+
+    - path: /api/yields/curve
+      method: GET
+      query_params: []
+      response_shape:
+        200:
+          type: object
+          fields:
+            data:
+              type: object
+              description: "{maturity_label: yield_value}"
+            as_of:
+              type: string
+              description: "ISO date of the curve snapshot"
+
+    - path: /api/yields/spread
+      method: GET
+      query_params:
+        - name: long
+          type: str
+          required: true
+        - name: short
+          type: str
+          required: true
+        - name: start_date
+          type: str
+          required: false
+        - name: end_date
+          type: str
+          required: false
+      response_shape:
+        200:
+          type: object
+          fields:
+            data:
+              type: array
+              items:
+                type: object
+                required_fields: [date, spread]
+            long:
+              type: string
+            short:
+              type: string
+            count:
+              type: integer
+        400:
+          type: object
+          fields:
+            detail: {type: string}
+
+    - path: /api/yields/inversions
+      method: GET
+      query_params: []
+      response_shape:
+        200:
+          type: object
+          fields:
+            data:
+              type: array
+              items:
+                type: object
+                required_fields: [short_maturity, long_maturity, spread]
+            count:
+              type: integer
+
+    - path: /api/ftd
+      method: GET
+      query_params:
+        - name: symbol
+          type: str
+          required: false
+        - name: start_date
+          type: str
+          required: false
+        - name: end_date
+          type: str
+          required: false
+      response_shape:
+        200:
+          type: object
+          fields:
+            data:
+              type: array
+              items:
+                type: object
+                required_fields: [symbol, date, value, data_type, source]
+            count:
+              type: integer
+        400:
+          type: object
+          fields:
+            detail: {type: string}
+
+    - path: /api/fred
+      method: GET
+      query_params:
+        - name: series_id
+          type: str
+          required: true
+        - name: start_date
+          type: str
+          required: false
+        - name: end_date
+          type: str
+          required: false
+      response_shape:
+        200:
+          type: object
+          fields:
+            data:
+              type: array
+              items:
+                type: object
+                required_fields: [date, value, source]
+            series_id:
+              type: string
+            count:
+              type: integer
+        400:
+          type: object
+          fields:
+            detail: {type: string}
+
+    - path: /api/glossary
+      method: GET
+      query_params: []
+      response_shape:
+        200:
+          type: object
+          fields:
+            data:
+              type: array
+              items:
+                type: object
+                required_fields: [term, description]
+            count:
+              type: integer
+
+    - path: "/api/glossary/{term}"
+      method: GET
+      path_params:
+        - name: term
+          type: str
+      response_shape:
+        200:
+          type: object
+          required_fields: [term, description]
+        404:
+          type: object
+          fields:
+            detail: {type: string}
+
+  imports:
+    - "agora.adapters.fred_adapter.fetch_series"
+    - "agora.adapters.treasury_adapter.fetch_yields"
+    - "agora.adapters.sec_ftd_adapter.fetch_ftd_data"
+    - "agora.analysis.yield_curve.current_curve"
+    - "agora.analysis.yield_curve.compute_spread"
+    - "agora.analysis.yield_curve.detect_inversions"
+
+do_not_do:
+  - "Do not call external APIs directly -- delegate to adapter modules"
+  - "Do not define data models -- use agora.schemas"
+  - "Do not hardcode API keys -- read from environment or config"
+  - "Do not return raw adapter objects -- serialize to JSON-friendly dicts"
+  - "Do not swallow errors silently -- return proper HTTP status codes with JSON detail"
+
+escalate_if:
+  - "Glossary data file (agora/glossary/terms.yaml) does not exist -- glossary_data task must complete first"
+
+known_findings: []

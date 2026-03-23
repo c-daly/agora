@@ -1,0 +1,37 @@
+interface_contracts:
+  file: webapp/src/components/MacroGrid.tsx
+  framework: React
+  component:
+    name: MacroGrid
+    description: "Grid of key FRED macro indicators with sparklines"
+    props:
+      - name: indicators
+        type: "Array<{ seriesId: string; label: string }>"
+        required: false
+        description: "List of FRED series to display; defaults to GDP, CPI, unemployment, fed funds rate"
+    features:
+      - "Grid layout of macro indicator cards"
+      - "Each cell: indicator name, current value, sparkline (last 12 data points)"
+      - "Fetch from GET /api/fred for each series"
+      - "Recharts sparkline component for mini-charts"
+      - "Handle loading and error states per indicator"
+    default_indicators:
+      - series_id: GDP
+        label: "GDP"
+      - series_id: CPIAUCSL
+        label: "CPI"
+      - series_id: UNRATE
+        label: "Unemployment Rate"
+      - series_id: FEDFUNDS
+        label: "Fed Funds Rate"
+    data_source:
+      endpoint: "GET /api/fred"
+      params: "series_id, start_date"
+
+do_not_do:
+  - "Do not skip loading state — each indicator should show a loading indicator while fetching"
+  - "Do not let one failed fetch break the entire grid — handle errors per indicator"
+
+escalate_if: []
+
+known_findings: []

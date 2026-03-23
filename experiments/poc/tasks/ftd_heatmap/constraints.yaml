@@ -1,0 +1,31 @@
+interface_contracts:
+  file: webapp/src/components/FtdHeatmap.tsx
+  framework: React
+  component:
+    name: FtdHeatmap
+    description: "Heatmap displaying fails-to-deliver data: symbol x date grid with color intensity mapped to FTD quantity"
+    props:
+      - name: data
+        type: "Array<{ date: string; symbol: string; quantity: number }>"
+        required: false
+        description: "Pre-loaded FTD data; if omitted, component fetches from /api/ftd"
+      - name: symbol
+        type: string
+        required: false
+        description: "Initial symbol filter"
+    features:
+      - "Heatmap grid: symbol x date, color intensity = FTD quantity"
+      - "Search/filter by symbol"
+      - "Fetch data from GET /api/ftd"
+      - "Handle empty data gracefully — show message, not blank"
+    data_source:
+      endpoint: "GET /api/ftd"
+      params: "symbol, start_date, end_date"
+
+do_not_do:
+  - "Do not render a blank screen when data is empty — show an informative message"
+  - "Do not omit loading state while data is being fetched"
+
+escalate_if: []
+
+known_findings: []

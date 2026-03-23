@@ -1,0 +1,17 @@
+depends_on:
+- glossary_data
+- webapp_scaffold
+eval: eval/
+id: glossary_tooltips
+issue: 7
+objective: "Wire glossary data into UI components as tooltips.\n\n- GlossaryTooltip\
+  \ component: wraps any text, shows tooltip on hover\n- Fetches glossary data from\
+  \ GET /api/glossary\n- Cache glossary client-side (fetch once, reuse)\n- Integrate\
+  \ into yield curve chart axis labels, macro grid headers,\n  and FTD heatmap column\
+  \ headers\n- Tooltip shows: term name, description, interpretation\n"
+success_criteria:
+- description: All pytest and vitest/jest tests must pass
+  metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: webapp/src/components/GlossaryTooltip.tsx

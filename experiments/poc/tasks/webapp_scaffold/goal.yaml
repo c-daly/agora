@@ -1,0 +1,18 @@
+depends_on:
+- api_routes
+eval: eval/
+id: webapp_scaffold
+issue: 4
+objective: "Create a React app with an interactive yield curve visualization.\n\n\
+  - React 18+ with Vite as build tool\n- Recharts for charting\n- Fetch data from\
+  \ the FastAPI backend (proxy /api to localhost:8000)\n- Yield curve chart: current\
+  \ curve (maturity x yield), with date slider\n- 10yr-2yr spread time series chart\n\
+  - Inversion highlighting (red when inverted)\n- Clean, minimal design \u2014 this\
+  \ is a POC, not a polished product\n\nThe webapp/ directory should be self-contained\
+  \ (its own package.json, vite config).\n"
+success_criteria:
+- description: All pytest and vitest/jest tests must pass
+  metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: webapp/
