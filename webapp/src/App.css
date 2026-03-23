@@ -58,3 +58,97 @@ p {
   color: #666;
   font-size: 0.9rem;
 }
+
+/* ---- Symbol Deep Dive styles ---- */
+
+.composite-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 0;
+}
+
+.composite-score__value {
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.composite-score__label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ticker-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.insider-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.insider-table th {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 2px solid #e5e7eb;
+  color: #555;
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.insider-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.insider-table tbody tr:hover {
+  background: #f8f9fb;
+}
+
+.divergence-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.divergence-card {
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #2563eb;
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+.divergence-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.divergence-card__badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.divergence-card p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #555;
+}
