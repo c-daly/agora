@@ -1,24 +1,25 @@
 objective: |
-  Build the FRED (Federal Reserve Economic Data) adapter module.
+  Build a FRED (Federal Reserve Economic Data) adapter for Agora.
 
-  The adapter should:
-  1. Fetch any FRED series by series ID via the FRED REST API
-  2. Return a list of TimeSeries objects matching the agora.schemas.TimeSeries schema
-  3. Handle API errors gracefully (bad key, invalid series, network errors) — raise
-     descriptive exceptions, never crash silently or return malformed data
-  4. Respect FRED rate limits (120 requests/min) with simple throttling
-  5. Support date range filtering (start_date, end_date parameters)
+  The adapter must:
+  1. Fetch any FRED time series by series ID
+  2. Return data as agora.schemas.TimeSeries objects with metadata.source="FRED"
+  3. Support filtering by date range
+  4. Handle errors gracefully — bad API keys, invalid series IDs, network failures
+     should raise descriptive exceptions, not crash or return malformed data
+  5. Skip missing/unavailable observations rather than returning bad values
 
-  The module lives at agora/adapters/fred_adapter.py and should expose:
-  - fetch_series(series_id: str, api_key: str, start_date: date | None, end_date: date | None) -> list[TimeSeries]
-
-  The FRED API base URL is https://api.stlouisfed.org/fred/series/observations
-  with parameters: series_id, api_key, file_type=json, observation_start, observation_end.
-
-  Response format: {"observations": [{"date": "YYYY-MM-DD", "value": "123.456"}, ...]}
-  Note: FRED returns value as a string. Missing values are represented as ".".
+  The FRED API key is available via the FRED_API_KEY environment variable.
+  FRED API documentation: https://fred.stlouisfed.org/docs/api/fred/
 
 target: agora/adapters/fred_adapter.py
+
+context: |
+  Agora is a financial intelligence platform that aggregates free data sources.
+  FRED is the first adapter — it provides macroeconomic time series data (GDP, CPI,
+  unemployment, interest rates, money supply, etc.).
+
+  The common data schemas are defined in agora/schemas/models.py.
 
 success_criteria:
   - metric: test_pass_rate
@@ -26,15 +27,7 @@ success_criteria:
     primary: true
     description: All pytest tests in eval/ must pass
 
-context: |
-  Agora is a financial intelligence platform that aggregates free data sources.
-  FRED is the first adapter — it provides macroeconomic time series data (GDP, CPI,
-  unemployment, interest rates, money supply, etc.).
-
-  The common schema is defined in agora/schemas/models.py. The adapter must return
-  TimeSeries objects with metadata.source="FRED".
-
-  The FRED API key is available via the FRED_API_KEY environment variable.
+eval: eval/
 
 environment:
   FRED_API_KEY: ${FRED_API_KEY}
