@@ -57,12 +57,12 @@ export function MacroGrid({ indicators = DEFAULT_INDICATORS }: Props) {
         })
         .then((json) => {
           const observations: ObservationPoint[] = (
-            json.observations ?? []
+            json.data ?? []
           )
             .slice(-12)
-            .map((obs: { date: string; value: string }) => ({
+            .map((obs: { date: string; value: number }) => ({
               date: obs.date,
-              value: parseFloat(obs.value),
+              value: obs.value,
             }));
           const latest =
             observations.length > 0

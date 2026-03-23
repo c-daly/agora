@@ -5,8 +5,8 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
   ReferenceLine,
+  ResponsiveContainer,
 } from "recharts";
 import type { SpreadPoint } from "../types";
 
@@ -19,28 +19,30 @@ export function SpreadChart({ data, loading }: Props) {
   if (loading) return <p>Loading spread data...</p>;
   if (data.length === 0) return <p>No spread data available.</p>;
 
+  const values = data.map((d) => d.spread);
+  const min = Math.min(...values, 0);
+  const max = Math.max(...values, 0);
+  const padding = (max - min) * 0.1 || 0.1;
+
   return (
-    <ResponsiveContainer width="100%" height={350}>
+    <ResponsiveContainer width="100%" height={300}>
       <AreaChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-        <defs>
-          <linearGradient id="spreadColor" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#1f77b4" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="#1f77b4" stopOpacity={0.1} />
-          </linearGradient>
-        </defs>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="date" />
-        <YAxis unit="%" />
-        <Tooltip formatter={(value: number) => [`${value.toFixed(2)}%`, "Spread"]} />
-        <ReferenceLine y={0} stroke="#666" strokeDasharray="3 3" />
+        <YAxis
+          domain={[min - padding, max + padding]}
+          tickFormatter={(v: number) => `${v.toFixed(2)}%`}
+        />
+        <Tooltip formatter={(value: number) => [`${value.toFixed(3)}%`, "Spread"]} />
+        <ReferenceLine y={0} stroke="#ef4444" strokeDasharray="3 3" label="Inversion" />
         <Area
           type="monotone"
           dataKey="spread"
-          stroke="#1f77b4"
-          fill="url(#spreadColor)"
+          stroke="#2563eb"
+          fill="#93c5fd"
+          fillOpacity={0.4}
           strokeWidth={2}
-          dot={false}
-          name="Spread"
+          name="10yr-2yr Spread"
         />
       </AreaChart>
     </ResponsiveContainer>

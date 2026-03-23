@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { YieldCurveChart } from "./components/YieldCurveChart";
 import { SpreadChart } from "./components/SpreadChart";
 import { FtdHeatmap } from "./components/FtdHeatmap";
+import { MacroGrid } from "./components/MacroGrid";
+import { GlossaryTooltip } from "./components/GlossaryTooltip";
 import type { YieldCurvePoint, SpreadPoint } from "./types";
+import "./App.css";
 
 function App() {
   const [curveData, setCurveData] = useState<YieldCurvePoint[]>([]);
@@ -14,7 +17,16 @@ function App() {
     fetch("/api/yields/curve")
       .then((res) => res.json())
       .then((json) => {
-        setCurveData(json.data ?? []);
+        // API returns {data: {maturity: yield, ...}, as_of: "..."}
+        // Transform to YieldCurvePoint[]
+        const dict = json.data ?? {};
+        const points: YieldCurvePoint[] = Object.entries(dict).map(
+          ([maturity, yield_pct]) => ({
+            maturity,
+            yield_pct: yield_pct as number,
+          })
+        );
+        setCurveData(points);
       })
       .catch(() => setCurveData([]))
       .finally(() => setCurveLoading(false));
@@ -36,20 +48,39 @@ function App() {
   }, []);
 
   return (
-    <div style={{ maxWidth: 960, margin: "0 auto", padding: 24 }}>
-      <h1>Agora — Yield Curve Dashboard</h1>
-      <section>
-        <h2>Current Yield Curve</h2>
-        <YieldCurveChart data={curveData} loading={curveLoading} />
-      </section>
-      <section style={{ marginTop: 32 }}>
-        <h2>10yr–2yr Spread</h2>
-        <SpreadChart data={spreadData} loading={spreadLoading} />
-      </section>
-      <section style={{ marginTop: 32 }}>
-        <h2>Fails-to-Deliver Heatmap</h2>
-        <FtdHeatmap />
-      </section>
+    <div className="app">
+      <header className="app-header">
+        <h1>Agora</h1>
+        <p className="subtitle">Open Financial Intelligence</p>
+      </header>
+
+      <main className="dashboard">
+        <section className="card">
+          <h2>
+            <GlossaryTooltip term="yield_curve">Current Yield Curve</GlossaryTooltip>
+          </h2>
+          <YieldCurveChart data={curveData} loading={curveLoading} />
+        </section>
+
+        <section className="card">
+          <h2>
+            <GlossaryTooltip term="spread">10yr–2yr Spread</GlossaryTooltip>
+          </h2>
+          <SpreadChart data={spreadData} loading={spreadLoading} />
+        </section>
+
+        <section className="card">
+          <h2>
+            <GlossaryTooltip term="ftd">Fails-to-Deliver Heatmap</GlossaryTooltip>
+          </h2>
+          <FtdHeatmap />
+        </section>
+
+        <section className="card">
+          <h2>Macro Indicators</h2>
+          <MacroGrid />
+        </section>
+      </main>
     </div>
   );
 }
