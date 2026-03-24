@@ -27,7 +27,7 @@ from agora.schemas import Transaction
 logger = logging.getLogger(__name__)
 
 EFTS_SEARCH_URL = "https://efts.sec.gov/LATEST/search-index"
-EDGAR_ARCHIVES_BASE = "https://www.sec.gov/Archives"
+EDGAR_ARCHIVES_BASE = "https://www.sec.gov/Archives/edgar/data"
 SEC_USER_AGENT = "Agora Financial Intelligence research@agora-finance.io"
 REQUEST_TIMEOUT = 30
 
@@ -103,7 +103,7 @@ def _search_form4_filings(
 ) -> list[str]:
     """Return a list of Form 4 XML document URLs for *symbol*."""
     params: dict[str, str] = {
-        "q": f'"issuerTradingSymbol" AND "{symbol.upper()}"',
+        "q": f'\"{symbol.upper()}\"',
         "forms": "4",
         "dateRange": "custom",
     }
@@ -141,10 +141,19 @@ def _extract_xml_urls(efts_response: dict[str, Any]) -> list[str]:
     urls: list[str] = []
     hits = efts_response.get("hits", {}).get("hits", [])
     for hit in hits:
-        file_path = hit.get("_id", "")
-        if file_path:
-            url = f"{EDGAR_ARCHIVES_BASE}/{file_path}"
-            urls.append(url)
+        _id = hit.get("_id", "")
+        source = hit.get("_source", {})
+        if ":" not in _id:
+            continue
+        accession, filename = _id.split(":", 1)
+        ciks = source.get("ciks", [])
+        if not ciks:
+            continue
+        # Use the company CIK (last one — first is typically the filer/insider)
+        cik = ciks[-1] if len(ciks) > 1 else ciks[0]
+        accession_nodash = accession.replace("-", "")
+        url = f"{EDGAR_ARCHIVES_BASE}/{cik}/{accession_nodash}/{filename}"
+        urls.append(url)
     return urls
 
 
