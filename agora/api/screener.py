@@ -9,6 +9,7 @@ with an error message instead of aborting the entire request.
 from __future__ import annotations
 
 import logging
+from datetime import date, timedelta
 
 from fastapi import APIRouter, HTTPException, Query
 
@@ -45,7 +46,9 @@ def _score_ticker(ticker: str) -> dict:
         short_int = []
 
     try:
-        ftd = sec_ftd_adapter.fetch_ftd_data(symbol=ticker)
+        end = date.today()
+        start = end - timedelta(days=30)
+        ftd = sec_ftd_adapter.fetch_ftd_data(symbol=ticker, start_date=start, end_date=end)
     except Exception:
         logger.warning("FTD fetch failed for %s", ticker, exc_info=True)
         ftd = []

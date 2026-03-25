@@ -8,7 +8,7 @@ short_composite and short_divergence analysis modules.
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
@@ -30,6 +30,17 @@ router = APIRouter()
 # Helpers
 # ---------------------------------------------------------------------------
 
+
+_FTD_LOOKBACK_DAYS = 30
+
+
+def _ftd_dates(start: date | None, end: date | None) -> tuple[date, date]:
+    """Default FTD date range to 90-day lookback if not specified."""
+    if end is None:
+        end = date.today()
+    if start is None:
+        start = end - timedelta(days=_FTD_LOOKBACK_DAYS)
+    return start, end
 
 def _parse_date(value: str | None, param_name: str) -> date | None:
     """Parse an ISO date string, raising HTTPException(400) on failure."""
@@ -178,9 +189,7 @@ def get_ftd(
 
     try:
         records = sec_ftd_adapter.fetch_ftd_data(
-            symbol=ticker,
-            start_date=parsed_start,
-            end_date=parsed_end,
+            symbol=ticker, start_date=_ftd_dates(parsed_start, parsed_end)[0], end_date=_ftd_dates(parsed_start, parsed_end)[1],
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
@@ -240,7 +249,7 @@ def get_short_composite(
 
     try:
         ftd = sec_ftd_adapter.fetch_ftd_data(
-            symbol=ticker, start_date=parsed_start, end_date=parsed_end,
+            symbol=ticker, start_date=_ftd_dates(parsed_start, parsed_end)[0], end_date=_ftd_dates(parsed_start, parsed_end)[1],
         )
     except Exception:
         ftd = []
@@ -273,7 +282,7 @@ def get_divergences(
 
     try:
         ftd = sec_ftd_adapter.fetch_ftd_data(
-            symbol=ticker, start_date=parsed_start, end_date=parsed_end,
+            symbol=ticker, start_date=_ftd_dates(parsed_start, parsed_end)[0], end_date=_ftd_dates(parsed_start, parsed_end)[1],
         )
     except Exception:
         ftd = []
@@ -323,7 +332,7 @@ def get_summary(
 
     try:
         ftd = sec_ftd_adapter.fetch_ftd_data(
-            symbol=ticker, start_date=parsed_start, end_date=parsed_end,
+            symbol=ticker, start_date=_ftd_dates(parsed_start, parsed_end)[0], end_date=_ftd_dates(parsed_start, parsed_end)[1],
         )
     except Exception:
         ftd = []
