@@ -1,0 +1,128 @@
+description: "Full Agora spec — all remaining adapters and analysis modules"
+
+tasks:
+  # Epic: EDGAR Suite (#17)
+  - id: edgar_filings_adapter
+    issue: 22
+    target: agora/adapters/edgar_filings_adapter.py
+    objective: "Fetch 10-K, 10-Q, 8-K filings from EDGAR. Return as Filing objects."
+  - id: edgar_institutional_adapter
+    issue: 23
+    target: agora/adapters/edgar_institutional_adapter.py
+    objective: "Fetch 13F institutional holdings from EDGAR. Return as Transaction objects."
+  - id: edgar_activist_adapter
+    issue: 24
+    target: agora/adapters/edgar_activist_adapter.py
+    objective: "Fetch 13D/13G activist disclosures from EDGAR. Return as Transaction objects."
+  - id: insider_activity
+    issue: 25
+    target: agora/analysis/insider_activity.py
+    depends_on: [edgar_institutional_adapter]
+    objective: "Aggregate insider buy/sell ratios by sector/company."
+
+  # Epic: Options & Sentiment (#18)
+  - id: yahoo_options_adapter
+    issue: 26
+    target: agora/adapters/yahoo_options_adapter.py
+    objective: "Fetch full options chains per symbol via yfinance. Return as OptionsSnapshot objects."
+  - id: options_sentiment_adapter
+    issue: 27
+    target: agora/adapters/options_sentiment_adapter.py
+    depends_on: [yahoo_options_adapter]
+    objective: "Compute put/call ratios and IV skew from options chains."
+  - id: short_squeeze_detector
+    issue: 28
+    target: agora/analysis/short_squeeze_detector.py
+    depends_on: [options_sentiment_adapter]
+    objective: "Identify squeeze candidates from combined short + options data."
+
+  # Epic: Short Selling Complete (#19)
+  - id: finra_short_interest_adapter
+    issue: 29
+    target: agora/adapters/finra_short_interest_adapter.py
+    objective: "Fetch twice-monthly short interest from FINRA."
+  - id: threshold_list_adapter
+    issue: 30
+    target: agora/adapters/threshold_list_adapter.py
+    objective: "Fetch Reg SHO threshold lists from NYSE, NASDAQ, CBOE."
+  - id: ftd_analyzer
+    issue: 31
+    target: agora/analysis/ftd_analyzer.py
+    objective: "FTD trend analysis — persistent FTDs, spikes, threshold correlation."
+  - id: sector_short_sentiment
+    issue: 32
+    target: agora/analysis/sector_short_sentiment.py
+    objective: "Aggregate short metrics by sector."
+
+  # Epic: Macro & Economic (#20)
+  - id: bls_adapter
+    issue: 33
+    target: agora/adapters/bls_adapter.py
+    objective: "Fetch employment, CPI, PPI from BLS API. Return as TimeSeries."
+  - id: congress_adapter
+    issue: 34
+    target: agora/adapters/congress_adapter.py
+    objective: "Fetch congressional trading disclosures. Return as Transaction objects."
+  - id: macro_dashboard
+    issue: 35
+    target: agora/analysis/macro_dashboard.py
+    depends_on: [bls_adapter]
+    objective: "Key indicator summary with trend detection."
+  - id: sector_analysis
+    issue: 36
+    target: agora/analysis/sector_analysis.py
+    objective: "Sector performance, rotation, correlation."
+  - id: earnings_context
+    issue: 37
+    target: agora/analysis/earnings_context.py
+    objective: "Upcoming earnings with historical surprise data."
+  - id: congress_tracker
+    issue: 38
+    target: agora/analysis/congress_tracker.py
+    depends_on: [congress_adapter]
+    objective: "Congressional trades with timing analysis."
+
+  # Epic: Quantitative (#21)
+  - id: correlation_matrix
+    issue: 39
+    target: agora/analysis/quant/correlation_matrix.py
+    objective: "Rolling and static pairwise correlation matrices."
+  - id: pca_factors
+    issue: 40
+    target: agora/analysis/quant/pca_factors.py
+    depends_on: [correlation_matrix]
+    objective: "PCA on returns covariance matrix."
+  - id: random_matrix_filter
+    issue: 41
+    target: agora/analysis/quant/random_matrix_filter.py
+    depends_on: [correlation_matrix]
+    objective: "Marchenko-Pastur filtering for signal vs noise."
+  - id: factor_decomposition
+    issue: 42
+    target: agora/analysis/quant/factor_decomposition.py
+    objective: "Fama-French style factor regression."
+  - id: cointegration
+    issue: 43
+    target: agora/analysis/quant/cointegration.py
+    objective: "Pairwise and basket cointegration testing."
+  - id: correlation_network
+    issue: 44
+    target: agora/analysis/quant/correlation_network.py
+    depends_on: [correlation_matrix]
+    objective: "Graph from correlation matrix — MST, threshold networks."
+  - id: volatility_decomposition
+    issue: 45
+    target: agora/analysis/quant/volatility_decomposition.py
+    objective: "Decompose realized volatility into components."
+  - id: short_factor_analysis
+    issue: 46
+    target: agora/analysis/quant/short_factor_analysis.py
+    depends_on: [pca_factors]
+    objective: "PCA/factor analysis on short positioning data."
+
+success_criteria:
+  - metric: test_pass_rate
+    threshold: 1.0
+    primary: true
+
+on_failure: continue
