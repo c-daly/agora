@@ -71,17 +71,61 @@ def _trend(ftd_data: list[ShortData]) -> str:
     return "flat"
 
 
-def analyze_ftd(ftd_data: list[ShortData]) -> dict:
+
+def _threshold_correlation(
+    ftd_data: list[ShortData],
+    threshold_data: list[ShortData],
+) -> tuple[bool, int]:
+    """Compute threshold list correlation with FTD data.
+
+    Returns a tuple of (on_threshold_list, threshold_overlap_days):
+    - on_threshold_list: True if the symbol appeared on a threshold list
+      during the FTD analysis period.
+    - threshold_overlap_days: number of FTD data days that overlap with
+      threshold list presence.
+    """
+    if not threshold_data:
+        return False, 0
+
+    ftd_dates = {f.date for f in ftd_data}
+    threshold_dates = {t.date for t in threshold_data if t.value > 0}
+
+    if not threshold_dates:
+        return False, 0
+
+    # Check if any threshold dates fall within the FTD analysis period
+    if not ftd_dates:
+        return False, 0
+
+    ftd_start = min(ftd_dates)
+    ftd_end = max(ftd_dates)
+    threshold_in_period = {
+        d for d in threshold_dates if ftd_start <= d <= ftd_end
+    }
+    on_threshold = len(threshold_in_period) > 0
+    overlap_days = len(ftd_dates & threshold_dates)
+
+    return on_threshold, overlap_days
+
+def analyze_ftd(
+    ftd_data: list[ShortData],
+    *,
+    threshold_data: list[ShortData] | None = None,
+) -> dict:
     """Analyse FTD data for a single symbol.
 
     Args:
         ftd_data: ShortData entries with data_type="ftd".
+        threshold_data: Optional ShortData entries with data_type="threshold".
+            When provided, threshold list correlation fields are added to the
+            result.
 
     Returns:
-        Dict with persistence, spike_days, trend, max_ftd, and avg_ftd.
+        Dict with persistence, spike_days, trend, max_ftd, avg_ftd, and
+        optionally on_threshold_list and threshold_overlap_days.
     """
     if not ftd_data:
-        return {
+        result = {
             "symbol": "UNKNOWN",
             "persistence": 0.0,
             "spike_days": [],
@@ -89,6 +133,10 @@ def analyze_ftd(ftd_data: list[ShortData]) -> dict:
             "max_ftd": 0.0,
             "avg_ftd": 0.0,
         }
+        if threshold_data is not None:
+            result["on_threshold_list"] = False
+            result["threshold_overlap_days"] = 0
+        return result
 
     symbol = ftd_data[0].symbol
     values = [f.value for f in ftd_data]
@@ -97,7 +145,7 @@ def analyze_ftd(ftd_data: list[ShortData]) -> dict:
     max_ftd = max(values)
     avg_ftd = round(sum(values) / total_days, 6)
 
-    return {
+    result = {
         "symbol": symbol,
         "persistence": _persistence(ftd_data),
         "spike_days": _spike_days(ftd_data, avg_ftd),
@@ -105,3 +153,12 @@ def analyze_ftd(ftd_data: list[ShortData]) -> dict:
         "max_ftd": max_ftd,
         "avg_ftd": avg_ftd,
     }
+
+    if threshold_data is not None:
+        on_threshold, overlap_days = _threshold_correlation(
+            ftd_data, threshold_data,
+        )
+        result["on_threshold_list"] = on_threshold
+        result["threshold_overlap_days"] = overlap_days
+
+    return result

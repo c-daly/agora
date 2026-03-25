@@ -9,6 +9,7 @@ import pytest
 from agora.analysis.ftd_analyzer import (
     _persistence,
     _spike_days,
+    _threshold_correlation,
     _trend,
     analyze_ftd,
 )

@@ -6,6 +6,8 @@ and detect sector rotation. Does not fetch any data itself.
 
 from __future__ import annotations
 
+import numpy as np
+
 from collections import defaultdict
 
 from agora.schemas import Quote
@@ -184,3 +186,74 @@ def compute_sector_rotation(
 
     results.sort(key=lambda r: r["momentum_change"], reverse=True)
     return results
+
+
+def compute_sector_correlation(
+    quotes_by_sector: dict[str, list],
+) -> dict:
+    """Compute pairwise correlation of sector average daily returns.
+
+    Returns dict with sectors, matrix, most_correlated_pair, least_correlated_pair.
+    """
+    if len(quotes_by_sector) < 2:
+        sectors = list(quotes_by_sector.keys())
+        return {
+            "sectors": sectors,
+            "matrix": [[1.0]] if sectors else [],
+            "most_correlated_pair": None,
+            "least_correlated_pair": None,
+        }
+
+    # Compute daily returns per sector (average across symbols)
+    sector_returns: dict[str, list[float]] = {}
+    for sector, quotes in quotes_by_sector.items():
+        sorted_q = sorted(quotes, key=lambda q: q.date)
+        if len(sorted_q) < 2:
+            continue
+        returns = []
+        for i in range(1, len(sorted_q)):
+            prev_close = sorted_q[i - 1].close
+            if prev_close != 0:
+                returns.append((sorted_q[i].close - prev_close) / prev_close)
+        if returns:
+            sector_returns[sector] = returns
+
+    sectors = sorted(sector_returns.keys())
+    if len(sectors) < 2:
+        return {
+            "sectors": sectors,
+            "matrix": [[1.0]] if sectors else [],
+            "most_correlated_pair": None,
+            "least_correlated_pair": None,
+        }
+
+    # Align lengths (use minimum)
+    min_len = min(len(sector_returns[s]) for s in sectors)
+    matrix_data = [sector_returns[s][:min_len] for s in sectors]
+
+    corr = np.corrcoef(matrix_data)
+    corr = np.nan_to_num(corr, nan=0.0)
+    corr_list = corr.tolist()
+
+    # Find most/least correlated pairs
+    best_pair = None
+    worst_pair = None
+    best_corr = -2.0
+    worst_corr = 2.0
+
+    for i in range(len(sectors)):
+        for j in range(i + 1, len(sectors)):
+            c = corr_list[i][j]
+            if c > best_corr:
+                best_corr = c
+                best_pair = (sectors[i], sectors[j], round(c, 6))
+            if c < worst_corr:
+                worst_corr = c
+                worst_pair = (sectors[i], sectors[j], round(c, 6))
+
+    return {
+        "sectors": sectors,
+        "matrix": corr_list,
+        "most_correlated_pair": best_pair,
+        "least_correlated_pair": worst_pair,
+    }

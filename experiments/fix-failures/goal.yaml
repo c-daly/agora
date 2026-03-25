@@ -1,0 +1,31 @@
+description: "Fix 3 review failures from full-spec batch"
+
+tasks:
+  - id: fix_edgar_institutional
+    target: agora/adapters/edgar_institutional_adapter.py
+    objective: |
+      The edgar_institutional_adapter is a broken stub. _search_13f_filings and
+      _parse_13f_filing are called but never defined. Calling fetch_institutional_holdings()
+      raises NameError at runtime. 
+      
+      Rewrite the full implementation following edgar_insider_adapter.py patterns:
+      EFTS search for 13F-HR filings, XML parsing of holdings, return Transaction objects.
+
+  - id: fix_ftd_analyzer
+    target: agora/analysis/ftd_analyzer.py
+    objective: |
+      The spec says "threshold list correlation" but analyze_ftd() has no threshold list
+      parameter or output. Add threshold_data parameter and compute overlap metrics.
+
+  - id: fix_sector_analysis
+    target: agora/analysis/sector_analysis.py
+    objective: |
+      The spec says "correlation" but the module only has performance and rotation.
+      Add compute_sector_correlation() using numpy.
+
+success_criteria:
+  - metric: test_pass_rate
+    threshold: 1.0
+    primary: true
+
+on_failure: stop
