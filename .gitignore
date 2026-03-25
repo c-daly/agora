@@ -5,3 +5,11 @@ __pycache__/
 .serena/
 node_modules/
 dist/
+
+# Agent scratch files
+_*.py
+_gen*.py
+_fix*.py
+_write*.py
+_tmp*.py
+.playwright-mcp/
