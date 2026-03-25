@@ -4,9 +4,9 @@ import { MacroGrid } from "../MacroGrid";
 
 function mockFetchSuccess(seriesId: string, values: number[]) {
   return {
-    observations: values.map((v, i) => ({
+    data: values.map((v, i) => ({
       date: `2024-${String(i + 1).padStart(2, "0")}-01`,
-      value: String(v),
+      value: v,
     })),
   };
 }
