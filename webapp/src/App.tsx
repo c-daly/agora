@@ -6,6 +6,7 @@ import { FtdHeatmap } from "./components/FtdHeatmap";
 import { MacroGrid } from "./components/MacroGrid";
 import { GlossaryTooltip } from "./components/GlossaryTooltip";
 import { SymbolDeepDive } from "./pages/SymbolDeepDive";
+import { Screener } from "./pages/Screener";
 import type { YieldCurvePoint, SpreadPoint } from "./types";
 import "./App.css";
 
@@ -155,6 +156,9 @@ function App() {
                 <a href="/" style={{ textDecoration: "none", color: "inherit" }}>Agora</a>
               </h1>
               <p className="subtitle">Open Financial Intelligence</p>
+              <nav className="header-nav">
+                <a href="/screener">Screener</a>
+              </nav>
             </div>
             <HeaderSearch />
           </div>
@@ -163,6 +167,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/symbol/:ticker" element={<SymbolDeepDive />} />
+          <Route path="/screener" element={<Screener />} />
         </Routes>
       </div>
     </BrowserRouter>
