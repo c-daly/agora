@@ -40,7 +40,7 @@ export function Screener() {
   const fetchScreener = useCallback((tickerList: string[]) => {
     setLoading(true);
     setError(null);
-    fetch(`/api/screener?tickers=${tickerList.join(",")}`)
+    fetch(`/api/screener?tickers=${tickerList.map(encodeURIComponent).join(",")}`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
@@ -67,7 +67,7 @@ export function Screener() {
   const handleAddTicker = (e: React.FormEvent) => {
     e.preventDefault();
     const sym = inputValue.trim().toUpperCase();
-    if (sym && !tickers.includes(sym)) {
+    if (sym && !tickers.includes(sym) && /^[A-Z]{1,10}$/.test(sym)) {
       setTickers((prev) => [...prev, sym]);
     }
     setInputValue("");
@@ -134,7 +134,10 @@ export function Screener() {
 
         {!loading && !error && (
           <div className="screener-table-wrapper">
-            <table className="screener-table" data-testid="screener-table">
+            {rows.length === 0 && !loading && !error && (
+        <p style={{ color: "#666", textAlign: "center", padding: "24px" }}>No results. Try adding tickers above.</p>
+      )}
+      {rows.length > 0 && <table className="screener-table" data-testid="screener-table">
               <thead>
                 <tr>
                   {columns.map((col) => (
@@ -176,7 +179,7 @@ export function Screener() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table>}
           </div>
         )}
       </section>

@@ -6,28 +6,22 @@ import { Screener } from "../Screener";
 const MOCK_SCREENER = {
   data: [
     {
-      ticker: "QS",
+      symbol: "QS",
       composite_score: 82,
-      signal_label: "Extreme",
-      short_volume_score: 90,
-      si_score: 75,
-      ftd_score: 80,
+      signal: "extreme",
+      components: { short_volume_score: 90, short_interest_score: 75, ftd_score: 80 },
     },
     {
-      ticker: "AAPL",
+      symbol: "AAPL",
       composite_score: 25,
-      signal_label: "Low",
-      short_volume_score: 20,
-      si_score: 15,
-      ftd_score: 30,
+      signal: "low",
+      components: { short_volume_score: 20, short_interest_score: 15, ftd_score: 30 },
     },
     {
-      ticker: "GME",
+      symbol: "GME",
       composite_score: 65,
-      signal_label: "High",
-      short_volume_score: 70,
-      si_score: 60,
-      ftd_score: 65,
+      signal: "high",
+      components: { short_volume_score: 70, short_interest_score: 60, ftd_score: 65 },
     },
   ],
 };
@@ -98,11 +92,11 @@ describe("Screener", () => {
     await waitFor(() => {
       expect(screen.getByTestId("screener-table")).toBeInTheDocument();
     });
-    const extremeBadge = screen.getByText("Extreme");
+    const extremeBadge = screen.getByText("extreme");
     expect(extremeBadge).toHaveClass("screener-badge--extreme");
-    const lowBadge = screen.getByText("Low");
+    const lowBadge = screen.getByText("low");
     expect(lowBadge).toHaveClass("screener-badge--low");
-    const highBadge = screen.getByText("High");
+    const highBadge = screen.getByText("high");
     expect(highBadge).toHaveClass("screener-badge--high");
   });
 

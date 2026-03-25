@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, Link } from "react-router-dom";
 import { YieldCurveChart } from "./components/YieldCurveChart";
 import { SpreadChart } from "./components/SpreadChart";
 import { FtdHeatmap } from "./components/FtdHeatmap";
@@ -153,11 +153,11 @@ function App() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div>
               <h1>
-                <a href="/" style={{ textDecoration: "none", color: "inherit" }}>Agora</a>
+                <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>Agora</Link>
               </h1>
               <p className="subtitle">Open Financial Intelligence</p>
               <nav className="header-nav">
-                <a href="/screener">Screener</a>
+                <Link to="/screener">Screener</Link>
               </nav>
             </div>
             <HeaderSearch />
