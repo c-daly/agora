@@ -1,31 +1,99 @@
-# Traceability Matrix — Full Spec Implementation
+# Traceability Matrix — Full Spec Coverage
 
-| # | Task | Implementation | Lines | Tests | Test Lines | Spec Reference | Status |
-|---|------|---------------|-------|-------|------------|----------------|--------|
-| 1 | edgar_filings_adapter | `agora/adapters/edgar_filings_adapter.py` | 213 | `tests/test_edgar_filings_adapter.py` | 289 | Adapters: edgar_filings_adapter — fetch 10-K, 10-Q, 8-K filings | COMPLETE |
-| 2 | edgar_institutional_adapter | `agora/adapters/edgar_institutional_adapter.py` | 106 | `tests/test_edgar_institutional_adapter.py` | 231 | Adapters: edgar_institutional_adapter — fetch 13F institutional holdings | COMPLETE |
-| 3 | edgar_activist_adapter | `agora/adapters/edgar_activist_adapter.py` | 358 | `tests/test_edgar_activist_adapter.py` | 397 | Adapters: edgar_activist_adapter — fetch 13D/13G activist disclosures | COMPLETE |
-| 4 | insider_activity | `agora/analysis/insider_activity.py` | 211 | `tests/test_insider_activity.py` | 280 | Analysis: insider_activity — aggregate insider buy/sell ratios | COMPLETE |
-| 5 | yahoo_options_adapter | `agora/adapters/yahoo_options_adapter.py` | 111 | `tests/test_yahoo_options_adapter.py` | 247 | Adapters: yahoo_options_adapter — full options chains per symbol | COMPLETE |
-| 6 | options_sentiment_adapter | `agora/adapters/options_sentiment_adapter.py` | 136 | `tests/test_options_sentiment_adapter.py` | 269 | Adapters: options_sentiment_adapter — put/call ratios and IV skew | COMPLETE |
-| 7 | short_squeeze_detector | `agora/analysis/short_squeeze_detector.py` | 405 | `tests/test_short_squeeze_detector.py` | 662 | Analysis: short_squeeze_detector — identify squeeze candidates | COMPLETE |
-| 8 | finra_short_interest_adapter | `agora/adapters/finra_short_interest_adapter.py` | 216 | `tests/test_finra_short_interest_adapter.py` | 294 | Adapters: finra_short_interest_adapter — twice-monthly short interest | COMPLETE |
-| 9 | threshold_list_adapter | `agora/adapters/threshold_list_adapter.py` | 254 | `tests/test_threshold_list_adapter.py` | 255 | Adapters: threshold_list_adapter — Reg SHO threshold lists | COMPLETE |
-| 10 | ftd_analyzer | `agora/analysis/ftd_analyzer.py` | 107 | `tests/test_ftd_analyzer.py` | 233 | Analysis: ftd_analyzer — FTD trend analysis per security | COMPLETE |
-| 11 | sector_short_sentiment | `agora/analysis/sector_short_sentiment.py` | 116 | `tests/test_sector_short_sentiment.py` | 372 | Analysis: sector_short_sentiment — aggregate short metrics by sector | COMPLETE |
-| 12 | bls_adapter | `agora/adapters/bls_adapter.py` | 154 | `tests/test_bls_adapter.py` | 254 | Adapters: bls_adapter — employment, CPI, PPI from BLS | COMPLETE |
-| 13 | congress_adapter | `agora/adapters/congress_adapter.py` | 274 | `tests/test_congress_adapter.py` | 309 | Adapters: congress_adapter — congressional trading disclosures | COMPLETE |
-| 14 | macro_dashboard | `agora/analysis/macro_dashboard.py` | 164 | `tests/test_macro_dashboard.py` | 315 | Analysis: macro_dashboard — key indicator summary with trend detection | COMPLETE |
-| 15 | sector_analysis | `agora/analysis/sector_analysis.py` | 186 | `tests/test_sector_analysis.py` | 415 | Analysis: sector_analysis — sector performance, rotation, correlation | COMPLETE |
-| 16 | earnings_context | `agora/analysis/earnings_context.py` | 104 | `tests/test_earnings_context.py` | 270 | Analysis: earnings_context — earnings with historical surprises | COMPLETE |
-| 17 | congress_tracker | `agora/analysis/congress_tracker.py` | 224 | `tests/test_congress_tracker.py` | 263 | Analysis: congress_tracker — congressional trades with timing analysis | COMPLETE |
-| 18 | correlation_matrix | `agora/analysis/quant/correlation_matrix.py` | 156 | `tests/test_correlation_matrix.py` | 210 | Quant: correlation_matrix — rolling/static pairwise correlations | COMPLETE |
-| 19 | pca_factors | `agora/analysis/quant/pca_factors.py` | 89 | `tests/test_pca_factors.py` | 69 | Quant: pca_factors — PCA on returns covariance matrix | COMPLETE |
-| 20 | random_matrix_filter | `agora/analysis/quant/random_matrix_filter.py` | 155 | `tests/test_random_matrix_filter.py` | 203 | Quant: random_matrix_filter — Marchenko-Pastur noise filtering | COMPLETE |
-| 21 | factor_decomposition | `agora/analysis/quant/factor_decomposition.py` | 149 | `tests/test_factor_decomposition.py` | 175 | Quant: factor_decomposition — Fama-French style regression | COMPLETE |
-| 22 | cointegration | `agora/analysis/quant/cointegration.py` | 194 | `tests/test_cointegration.py` | 158 | Quant: cointegration — pairwise cointegration testing | COMPLETE |
-| 23 | correlation_network | `agora/analysis/quant/correlation_network.py` | 173 | `tests/test_correlation_network.py` | 260 | Quant: correlation_network — graph from correlation matrix | COMPLETE |
-| 24 | volatility_decomposition | `agora/analysis/quant/volatility_decomposition.py` | 171 | `tests/test_volatility_decomposition.py` | 231 | Quant: volatility_decomposition — overnight/intraday split + VRP | COMPLETE |
-| 25 | short_factor_analysis | `agora/analysis/quant/short_factor_analysis.py` | 203 | `tests/test_short_factor_analysis.py` | 257 | Quant: short_factor_analysis — PCA on short positioning data | COMPLETE |
+Built from `docs/agora-spec.md`, not from goal.yaml.
 
-**Total: 25/25 implementations, 658 tests passing**
+| # | Spec Component | Expected File | Spec Requirement | Status |
+|---|---------------|---------------|------------------|--------|
+| 1 | fred_adapter | `agora/adapters/fred_adapter.py` | fetch any FRED series by ID | IMPLEMENTED (124L) |
+| 2 | edgar_filings_adapter | `agora/adapters/edgar_filings_adapter.py` | fetch 10-K, 10-Q, 8-K filings | IMPLEMENTED (213L) |
+| 3 | edgar_insider_adapter | `agora/adapters/edgar_insider_adapter.py` | fetch Form 4 insider transactions | IMPLEMENTED (322L) |
+| 4 | edgar_institutional_adapter | `agora/adapters/edgar_institutional_adapter.py` | fetch 13F institutional holdings | IMPLEMENTED (186L) |
+| 5 | edgar_activist_adapter | `agora/adapters/edgar_activist_adapter.py` | fetch 13D/13G activist disclosures | IMPLEMENTED (358L) |
+| 6 | treasury_adapter | `agora/adapters/treasury_adapter.py` | yield curves, auction results | IMPLEMENTED (214L) |
+| 7 | bls_adapter | `agora/adapters/bls_adapter.py` | employment, inflation detail | IMPLEMENTED (154L) |
+| 8 | yahoo_quotes_adapter | `agora/adapters/yahoo_quotes_adapter.py` | quotes, historicals, fundamentals | IMPLEMENTED (59L) |
+| 9 | yahoo_options_adapter | `agora/adapters/yahoo_options_adapter.py` | full options chains per symbol | IMPLEMENTED (111L) |
+| 10 | congress_adapter | `agora/adapters/congress_adapter.py` | congressional trading disclosures | IMPLEMENTED (274L) |
+| 11 | finra_short_volume_adapter | `agora/adapters/finra_short_volume_adapter.py` | daily short sale volume, all TRFs combined | IMPLEMENTED (209L) |
+| 12 | finra_short_interest_adapter | `agora/adapters/finra_short_interest_adapter.py` | twice-monthly short interest per security | IMPLEMENTED (216L) |
+| 13 | sec_ftd_adapter | `agora/adapters/sec_ftd_adapter.py` | SEC fails-to-deliver flat files | IMPLEMENTED (260L) |
+| 14 | threshold_list_adapter | `agora/adapters/threshold_list_adapter.py` | Reg SHO threshold lists from NYSE, NASDAQ, CBOE | IMPLEMENTED (254L) |
+| 15 | yahoo_short_adapter | `agora/adapters/yahoo_short_adapter.py` | short interest, short ratio from yfinance | IMPLEMENTED (108L) |
+| 16 | options_sentiment_adapter | `agora/adapters/options_sentiment_adapter.py` | put/call ratios and IV skew | IMPLEMENTED (136L) |
+| 17 | yield_curve | `agora/analysis/yield_curve.py` | current curve, historical, inversion detection | IMPLEMENTED (136L) |
+| 18 | insider_activity | `agora/analysis/insider_activity.py` | aggregate insider buy/sell ratios by sector/company | IMPLEMENTED (211L) |
+| 19 | macro_dashboard | `agora/analysis/macro_dashboard.py` | key indicator summary with trend detection | IMPLEMENTED (164L) |
+| 20 | sector_analysis | `agora/analysis/sector_analysis.py` | sector performance, rotation, correlation | IMPLEMENTED (259L) |
+| 21 | earnings_context | `agora/analysis/earnings_context.py` | upcoming earnings with historical surprise data | IMPLEMENTED (104L) |
+| 22 | congress_tracker | `agora/analysis/congress_tracker.py` | congressional trades with timing analysis | IMPLEMENTED (224L) |
+| 23 | short_composite | `agora/analysis/short_composite.py` | unified per-symbol score from all short sources | IMPLEMENTED (216L) |
+| 24 | short_squeeze_detector | `agora/analysis/short_squeeze_detector.py` | identify candidates: high SI + rising price + high DTC | IMPLEMENTED (405L) |
+| 25 | short_divergence | `agora/analysis/short_divergence.py` | detect divergences between short positioning and other signals | IMPLEMENTED (251L) |
+| 26 | ftd_analyzer | `agora/analysis/ftd_analyzer.py` | FTD trend analysis, threshold list correlation | IMPLEMENTED (164L) |
+| 27 | sector_short_sentiment | `agora/analysis/sector_short_sentiment.py` | aggregate short metrics by sector | IMPLEMENTED (116L) |
+| 28 | correlation_matrix | `agora/analysis/quant/correlation_matrix.py` | rolling/static pairwise correlation, regime changes | IMPLEMENTED (156L) |
+| 29 | pca_factors | `agora/analysis/quant/pca_factors.py` | PCA on returns covariance, latent factors | IMPLEMENTED (89L) |
+| 30 | random_matrix_filter | `agora/analysis/quant/random_matrix_filter.py` | Marchenko-Pastur noise filtering | IMPLEMENTED (155L) |
+| 31 | factor_decomposition | `agora/analysis/quant/factor_decomposition.py` | Fama-French style regression | IMPLEMENTED (149L) |
+| 32 | cointegration | `agora/analysis/quant/cointegration.py` | pairwise cointegration testing | IMPLEMENTED (194L) |
+| 33 | correlation_network | `agora/analysis/quant/correlation_network.py` | graph from correlation matrix, MST, topology | IMPLEMENTED (173L) |
+| 34 | volatility_decomposition | `agora/analysis/quant/volatility_decomposition.py` | overnight vs intraday, variance risk premium | IMPLEMENTED (171L) |
+| 35 | short_factor_analysis | `agora/analysis/quant/short_factor_analysis.py` | PCA on short positioning data | IMPLEMENTED (203L) |
+| 36 | viz_yield_curve | `webapp/src/components/YieldCurveChart.tsx` | Interactive yield curve with time slider | IMPLEMENTED (46L) |
+| 37 | viz_macro_grid | `webapp/src/components/MacroGrid.tsx` | Macro indicator grid with sparklines | IMPLEMENTED (151L) |
+| 38 | viz_insider_heatmap | — | Insider trading heatmap (sector x time) | **MISSING** |
+| 39 | viz_sector_rotation | — | Sector rotation chart | **MISSING** |
+| 40 | viz_congress_timeline | — | Congressional trading timeline | **MISSING** |
+| 41 | viz_earnings_calendar | — | Earnings calendar with context | **MISSING** |
+| 42 | viz_correlation_explorer | — | Correlation matrix explorer | **MISSING** |
+| 43 | viz_short_composite | `webapp/src/pages/SymbolDeepDive.tsx` | Short composite dashboard per symbol | IMPLEMENTED (332L) |
+| 44 | viz_short_volume_ratio | `webapp/src/pages/SymbolDeepDive.tsx` | Short volume ratio time series | IMPLEMENTED (332L) |
+| 45 | viz_short_interest_tracker | — | Short interest change tracker | **MISSING** |
+| 46 | viz_ftd_heatmap | `webapp/src/components/FtdHeatmap.tsx` | FTD heatmap (symbol x time) | IMPLEMENTED (167L) |
+| 47 | viz_threshold_monitor | — | Threshold list monitor | **MISSING** |
+| 48 | viz_squeeze_screener | `webapp/src/pages/Screener.tsx` | Short squeeze candidate screener | IMPLEMENTED (188L) |
+| 49 | viz_options_gauge | — | Options sentiment gauge | **MISSING** |
+| 50 | viz_divergence_alerts | `webapp/src/pages/SymbolDeepDive.tsx` | Short divergence alerts | IMPLEMENTED (332L) |
+| 51 | viz_sector_short_pressure | — | Sector short pressure chart | **MISSING** |
+| 52 | viz_corr_matrix | — | Interactive correlation matrix | **MISSING** |
+| 53 | viz_pca_chart | — | PCA variance explained chart | **MISSING** |
+| 54 | viz_factor_bars | — | Factor loading bar charts | **MISSING** |
+| 55 | viz_corr_network | — | Correlation network graph | **MISSING** |
+| 56 | viz_cointegration_spreads | — | Cointegration pair spread charts | **MISSING** |
+| 57 | viz_vol_decomp | — | Volatility decomposition stacked area | **MISSING** |
+| 58 | viz_vrp_timeseries | — | Variance risk premium time series | **MISSING** |
+| 59 | viz_short_factor_heatmap | — | Short factor heatmap | **MISSING** |
+| 60 | app_dashboard_composer | — | Dashboard composer — arrange components | **MISSING** |
+| 61 | app_symbol_search | `webapp/src/App.tsx` | Symbol search with auto-complete | IMPLEMENTED (177L) |
+| 62 | app_glossary_tooltips | `webapp/src/components/GlossaryTooltip.tsx` | Glossary tooltips on ALL metrics, axes, column headers | IMPLEMENTED (106L) |
+| 63 | app_refresh_indicator | — | Data refresh status indicator | **MISSING** |
+| 64 | app_source_attribution | — | Source attribution per widget | **MISSING** |
+| 65 | app_alert_config | — | Alert configuration for squeeze/divergence | **MISSING** |
+| 66 | glossary_data | `agora/glossary/terms.yaml` | Static term definitions | IMPLEMENTED (281L) |
+| 67 | glossary_api | `agora/api/routes.py` | GET /api/glossary endpoints | IMPLEMENTED (313L) |
+
+**Implemented: 46 | Missing: 21 | Total: 67**
+
+## Missing Components
+
+- **viz_insider_heatmap**: Insider trading heatmap (sector x time)
+- **viz_sector_rotation**: Sector rotation chart
+- **viz_congress_timeline**: Congressional trading timeline
+- **viz_earnings_calendar**: Earnings calendar with context
+- **viz_correlation_explorer**: Correlation matrix explorer
+- **viz_short_interest_tracker**: Short interest change tracker
+- **viz_threshold_monitor**: Threshold list monitor
+- **viz_options_gauge**: Options sentiment gauge
+- **viz_sector_short_pressure**: Sector short pressure chart
+- **viz_corr_matrix**: Interactive correlation matrix
+- **viz_pca_chart**: PCA variance explained chart
+- **viz_factor_bars**: Factor loading bar charts
+- **viz_corr_network**: Correlation network graph
+- **viz_cointegration_spreads**: Cointegration pair spread charts
+- **viz_vol_decomp**: Volatility decomposition stacked area
+- **viz_vrp_timeseries**: Variance risk premium time series
+- **viz_short_factor_heatmap**: Short factor heatmap
+- **app_dashboard_composer**: Dashboard composer — arrange components
+- **app_refresh_indicator**: Data refresh status indicator
+- **app_source_attribution**: Source attribution per widget
+- **app_alert_config**: Alert configuration for squeeze/divergence
