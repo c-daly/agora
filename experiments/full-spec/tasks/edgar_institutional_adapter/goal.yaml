@@ -1,9 +1,0 @@
-eval: eval/
-id: edgar_institutional_adapter
-issue: 23
-objective: Fetch 13F institutional holdings from EDGAR. Return as Transaction objects.
-success_criteria:
-- metric: test_pass_rate
-  primary: true
-  threshold: 1.0
-target: agora/adapters/edgar_institutional_adapter.py

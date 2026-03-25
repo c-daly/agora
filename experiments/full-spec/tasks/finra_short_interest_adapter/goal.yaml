@@ -1,9 +1,0 @@
-eval: eval/
-id: finra_short_interest_adapter
-issue: 29
-objective: Fetch twice-monthly short interest from FINRA.
-success_criteria:
-- metric: test_pass_rate
-  primary: true
-  threshold: 1.0
-target: agora/adapters/finra_short_interest_adapter.py

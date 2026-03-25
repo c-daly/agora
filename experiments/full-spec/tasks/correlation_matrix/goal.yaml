@@ -1,9 +1,0 @@
-eval: eval/
-id: correlation_matrix
-issue: 39
-objective: Rolling and static pairwise correlation matrices.
-success_criteria:
-- metric: test_pass_rate
-  primary: true
-  threshold: 1.0
-target: agora/analysis/quant/correlation_matrix.py

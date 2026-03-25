@@ -1,9 +1,0 @@
-eval: eval/
-id: bls_adapter
-issue: 33
-objective: Fetch employment, CPI, PPI from BLS API. Return as TimeSeries.
-success_criteria:
-- metric: test_pass_rate
-  primary: true
-  threshold: 1.0
-target: agora/adapters/bls_adapter.py

@@ -1,9 +1,0 @@
-eval: eval/
-id: threshold_list_adapter
-issue: 30
-objective: Fetch Reg SHO threshold lists from NYSE, NASDAQ, CBOE.
-success_criteria:
-- metric: test_pass_rate
-  primary: true
-  threshold: 1.0
-target: agora/adapters/threshold_list_adapter.py
