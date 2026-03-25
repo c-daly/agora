@@ -16,7 +16,7 @@ type SortKey = keyof ScreenerRow;
 type SortDir = "asc" | "desc";
 
 function signalBadgeClass(signal: string): string {
-  const s = signal.toLowerCase();
+  const s = (signal ?? "low").toLowerCase();
   if (s.includes("extreme")) return "screener-badge screener-badge--extreme";
   if (s.includes("high")) return "screener-badge screener-badge--high";
   if (s.includes("moderate")) return "screener-badge screener-badge--moderate";
@@ -46,7 +46,15 @@ export function Screener() {
         return res.json();
       })
       .then((json) => {
-        setRows(json.data ?? []);
+        const mapped: ScreenerRow[] = (json.data ?? []).map((r: Record<string, unknown>) => ({
+          ticker: r.symbol as string,
+          composite_score: r.composite_score as number,
+          signal_label: (r.signal as string) ?? "N/A",
+          short_volume_score: ((r.components as Record<string, number>)?.short_volume_score) ?? 0,
+          si_score: ((r.components as Record<string, number>)?.short_interest_score) ?? 0,
+          ftd_score: ((r.components as Record<string, number>)?.ftd_score) ?? 0,
+        }));
+        setRows(mapped);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
