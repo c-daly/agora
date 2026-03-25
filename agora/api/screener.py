@@ -29,22 +29,25 @@ _MAX_TICKERS = 20
 def _score_ticker(ticker: str) -> dict:
     """Fetch data and compute composite score for a single ticker.
 
-    Returns the composite result dict on success.  Raises on failure so
-    the caller can catch and record the error.
+    Individual adapter failures are logged and degraded (empty data).
+    Only raises if compute_short_composite itself fails.
     """
     try:
         short_vol = finra_short_volume_adapter.fetch_short_volume(ticker)
     except Exception:
+        logger.warning("Short volume fetch failed for %s", ticker, exc_info=True)
         short_vol = []
 
     try:
         short_int = yahoo_short_adapter.fetch_short_interest(ticker)
     except Exception:
+        logger.warning("Short interest fetch failed for %s", ticker, exc_info=True)
         short_int = []
 
     try:
         ftd = sec_ftd_adapter.fetch_ftd_data(symbol=ticker)
     except Exception:
+        logger.warning("FTD fetch failed for %s", ticker, exc_info=True)
         ftd = []
 
     return short_composite.compute_short_composite(short_vol, short_int, ftd)
@@ -87,7 +90,7 @@ def get_screener(
             results.append(composite)
         except Exception as exc:
             logger.warning("Screener failed for %s: %s", symbol, exc)
-            errors.append({"symbol": symbol, "error": str(exc)})
+            errors.append({"symbol": symbol, "error": "Failed to compute score"})
 
     # Sort by composite_score descending
     results.sort(key=lambda r: r.get("composite_score", 0), reverse=True)

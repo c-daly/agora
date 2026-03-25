@@ -1,0 +1,64 @@
+description: "Stock Screener — ranked table of tickers by composite short score"
+
+tasks:
+  - id: batch_scoring_api
+    target: agora/api/screener.py
+    objective: |
+      Add a screener API endpoint that scores multiple tickers at once.
+
+      Route: GET /api/screener?tickers=QS,GME,AMC,BBBY,TSLA,AAPL,SPY
+
+      For each ticker:
+      1. Fetch short volume, short interest, and FTD data
+      2. Run short_composite scoring
+      3. Return sorted results (highest composite score first)
+
+      Response shape:
+      {
+        "data": [
+          {"ticker": "QS", "composite_score": 69.3, "signal": "high", "components": {...}},
+          ...
+        ],
+        "count": 7
+      }
+
+      Mount as route on existing FastAPI app.
+      Handle individual ticker failures gracefully — skip and continue.
+      Timeout per ticker to prevent one slow adapter from blocking everything.
+
+  - id: screener_page
+    target: webapp/src/pages/Screener.tsx
+    depends_on: [batch_scoring_api]
+    objective: |
+      Build a screener page in the React app.
+
+      - Default tickers: QS, GME, AMC, TSLA, AAPL, SPY, NVDA, PLTR
+      - Table with columns: Ticker, Composite Score, Signal, Short Vol Score, SI Score, FTD Score
+      - Sortable by any column (click header to sort)
+      - Color-coded signal badges (red=extreme, orange=high, yellow=moderate, green=low)
+      - Each ticker links to /symbol/{ticker} deep dive
+      - Input field to add custom tickers to the list
+      - Loading state per-row (scores come back as they're computed)
+      - Add route /screener to the React app
+      - Add "Screener" nav link in the header
+
+  - id: screener_tests
+    target: tests/test_screener_api.py
+    depends_on: [batch_scoring_api]
+    objective: |
+      Write comprehensive tests for the screener API.
+
+      - Test with mocked adapters (no real API calls)
+      - Test: returns sorted results (highest score first)
+      - Test: handles invalid tickers gracefully
+      - Test: handles adapter failures for individual tickers
+      - Test: respects ticker timeout
+      - Test: response shape matches spec
+      - Test: empty ticker list returns empty results
+
+success_criteria:
+  - metric: test_pass_rate
+    threshold: 1.0
+    primary: true
+
+on_failure: stop
