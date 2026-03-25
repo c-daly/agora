@@ -1,0 +1,9 @@
+eval: eval/
+id: volatility_decomposition
+issue: 45
+objective: Decompose realized volatility into components.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/quant/volatility_decomposition.py

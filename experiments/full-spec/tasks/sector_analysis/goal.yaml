@@ -1,0 +1,9 @@
+eval: eval/
+id: sector_analysis
+issue: 36
+objective: Sector performance, rotation, correlation.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/sector_analysis.py

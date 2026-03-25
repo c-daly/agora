@@ -1,0 +1,11 @@
+depends_on:
+- bls_adapter
+eval: eval/
+id: macro_dashboard
+issue: 35
+objective: Key indicator summary with trend detection.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/macro_dashboard.py

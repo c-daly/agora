@@ -1,0 +1,11 @@
+depends_on:
+- correlation_matrix
+eval: eval/
+id: random_matrix_filter
+issue: 41
+objective: Marchenko-Pastur filtering for signal vs noise.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/quant/random_matrix_filter.py

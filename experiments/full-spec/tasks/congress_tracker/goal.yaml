@@ -1,0 +1,11 @@
+depends_on:
+- congress_adapter
+eval: eval/
+id: congress_tracker
+issue: 38
+objective: Congressional trades with timing analysis.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/congress_tracker.py

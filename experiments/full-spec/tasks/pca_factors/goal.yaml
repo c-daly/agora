@@ -1,0 +1,11 @@
+depends_on:
+- correlation_matrix
+eval: eval/
+id: pca_factors
+issue: 40
+objective: PCA on returns covariance matrix.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/quant/pca_factors.py

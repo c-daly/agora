@@ -1,0 +1,11 @@
+depends_on:
+- correlation_matrix
+eval: eval/
+id: correlation_network
+issue: 44
+objective: "Graph from correlation matrix \u2014 MST, threshold networks."
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/quant/correlation_network.py

@@ -1,0 +1,9 @@
+eval: eval/
+id: edgar_filings_adapter
+issue: 22
+objective: Fetch 10-K, 10-Q, 8-K filings from EDGAR. Return as Filing objects.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/adapters/edgar_filings_adapter.py

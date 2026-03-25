@@ -1,0 +1,9 @@
+eval: eval/
+id: sector_short_sentiment
+issue: 32
+objective: Aggregate short metrics by sector.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/sector_short_sentiment.py

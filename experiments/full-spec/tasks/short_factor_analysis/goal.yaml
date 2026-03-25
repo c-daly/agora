@@ -1,0 +1,11 @@
+depends_on:
+- pca_factors
+eval: eval/
+id: short_factor_analysis
+issue: 46
+objective: PCA/factor analysis on short positioning data.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/quant/short_factor_analysis.py

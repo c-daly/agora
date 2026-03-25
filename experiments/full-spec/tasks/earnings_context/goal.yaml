@@ -1,0 +1,9 @@
+eval: eval/
+id: earnings_context
+issue: 37
+objective: Upcoming earnings with historical surprise data.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/earnings_context.py

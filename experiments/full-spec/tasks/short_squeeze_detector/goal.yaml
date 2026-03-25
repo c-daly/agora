@@ -1,0 +1,11 @@
+depends_on:
+- options_sentiment_adapter
+eval: eval/
+id: short_squeeze_detector
+issue: 28
+objective: Identify squeeze candidates from combined short + options data.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/short_squeeze_detector.py

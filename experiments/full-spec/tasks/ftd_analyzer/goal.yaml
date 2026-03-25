@@ -1,0 +1,9 @@
+eval: eval/
+id: ftd_analyzer
+issue: 31
+objective: "FTD trend analysis \u2014 persistent FTDs, spikes, threshold correlation."
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/ftd_analyzer.py

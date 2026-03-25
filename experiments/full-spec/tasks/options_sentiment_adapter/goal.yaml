@@ -1,0 +1,11 @@
+depends_on:
+- yahoo_options_adapter
+eval: eval/
+id: options_sentiment_adapter
+issue: 27
+objective: Compute put/call ratios and IV skew from options chains.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/adapters/options_sentiment_adapter.py

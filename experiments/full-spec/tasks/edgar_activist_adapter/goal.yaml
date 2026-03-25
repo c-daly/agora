@@ -1,0 +1,9 @@
+eval: eval/
+id: edgar_activist_adapter
+issue: 24
+objective: Fetch 13D/13G activist disclosures from EDGAR. Return as Transaction objects.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/adapters/edgar_activist_adapter.py

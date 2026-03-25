@@ -1,0 +1,11 @@
+depends_on:
+- edgar_institutional_adapter
+eval: eval/
+id: insider_activity
+issue: 25
+objective: Aggregate insider buy/sell ratios by sector/company.
+success_criteria:
+- metric: test_pass_rate
+  primary: true
+  threshold: 1.0
+target: agora/analysis/insider_activity.py
